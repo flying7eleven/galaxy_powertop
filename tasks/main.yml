@@ -1,0 +1,42 @@
+---
+- name: Install powertop and related components (Arch Linux)...
+  become: yes
+  pacman: name={{ item }} state=latest
+  with_items:
+    - powertop
+  when: ansible_os_family == 'Arch Linux' or ansible_os_family == 'Archlinux'
+  tags:
+    - powertop
+
+- name: Install powertop and related components (Debian)...
+  become: yes
+  apt: name={{ item }} state=latest
+  with_items:
+    - powertop
+  when: ansible_os_family == 'Debian'
+  tags:
+    - powertop
+
+- name: Ensure the required directories exist...
+  become: yes
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - /etc/systemd/system
+  tags:
+    - powertop
+
+- name: Install hooks and timers for auto-tuning the power settings...
+  become: yes
+  template: src={{ item.src }} dest={{ item.dest }} mode=0644
+  with_items:
+    - { src: "powertop.service.j2", dest: "/etc/systemd/system/powertop.service" }
+  tags:
+    - powertop
+
+- name: Ensure that the timer for auto-tuning the power settings is enabled...
+  become: yes
+  systemd: enabled=yes name={{ item }}
+  with_items:
+    - powertop.service
+  tags:
+    - powertop
