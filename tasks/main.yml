@@ -1,18 +1,23 @@
 ---
 - name: Install powertop and related components (Arch Linux)...
   become: yes
-  pacman: name={{ item }} state=latest
-  with_items:
-    - powertop
+  pacman:
+    name: [
+            'powertop'
+          ]
+    state: latest
+    update_cache: yes
   when: ansible_os_family == 'Arch Linux' or ansible_os_family == 'Archlinux'
   tags:
     - powertop
 
 - name: Install powertop and related components (Debian)...
   become: yes
-  apt: name={{ item }} state=latest
-  with_items:
-    - powertop
+  apt:
+    name: [
+            'powertop'
+          ]
+    state: latest
   when: ansible_os_family == 'Debian'
   tags:
     - powertop
